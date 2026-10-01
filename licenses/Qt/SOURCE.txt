@@ -1,0 +1,13 @@
+Unmodified license texts from Qt for Python 6.9.2 upstream:
+https://raw.githubusercontent.com/pyside/pyside-setup/v6.9.2/LICENSES/LGPL-3.0-only.txt
+https://raw.githubusercontent.com/pyside/pyside-setup/v6.9.2/LICENSES/GPL-3.0-only.txt
+
+Upstream library licensing and source:
+https://doc.qt.io/qtforpython-6/licenses.html
+https://github.com/pyside/pyside-setup/tree/v6.9.2
+https://code.qt.io/cgit/qt/qtbase.git/tree/?h=v6.9.2
+
+This distribution uses the open-source LGPL option for Qt Core/Gui/Widgets/Network
+and PySide6/Shiboken. Shared libraries remain separately replaceable inside
+_internal/PySide6 and _internal/shiboken6. Application source and build procedures
+are supplied alongside the executable folder.

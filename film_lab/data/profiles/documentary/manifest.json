@@ -1,0 +1,25 @@
+{
+  "id": "documentary",
+  "version": "1.0.0",
+  "input_space": "sRGB_D65_encoded",
+  "output_space": "sRGB_D65_encoded",
+  "grid_size": 33,
+  "sha256": "880dcd40b001a6c631a6e78e732533e5f5a93f8be88036be2e94d5f76fad19fe",
+  "baseline_version": "1.0.0",
+  "kind": "cube",
+  "asset": "style.cube",
+  "source": {
+    "creator": "Film Lab project",
+    "method": "Original mathematical transform authored in tools/generate_profiles.py",
+    "reference_camera": null,
+    "calibration_images": 0,
+    "validation_images": 0
+  },
+  "license": {
+    "spdx": "MIT",
+    "redistribution": "Use, modification and redistribution permitted under the bundled MIT license."
+  },
+  "validation_status": "initial_style",
+  "description": "절제된 색과 차가운 그림자, 다큐멘터리 사진의 명암",
+  "notice": "필름 느낌을 위한 자체 제작 초기 스타일입니다. 참고 사진으로 정밀 보정하기 전 단계입니다."
+}

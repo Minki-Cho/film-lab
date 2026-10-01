@@ -1,0 +1,164 @@
+{
+  "platform": "Windows-11-10.0.26200-SP0",
+  "processor": "AMD Ryzen 7 7730U with Radeon Graphics",
+  "logical_cpus": 16,
+  "ram_bytes": 16483880960,
+  "engine_process_peak_working_set_bytes": 960856064,
+  "source": {
+    "id": "test-data\\sony_a6400_01.arw",
+    "path": "test-data\\sony_a6400_01.arw",
+    "size_bytes": 24951552,
+    "mtime_ns": 1790855872698142500,
+    "sha256": "d02004c1b918a3ac17718171a9dcab1c0b9e91ff0d4516106c675e44f87b6be4",
+    "camera_model": "ILCE-6400",
+    "width": 6024,
+    "height": 4024,
+    "rotation": 0,
+    "libraw_flip": 0,
+    "metadata": {
+      "camera_model": "ILCE-6400",
+      "make": "SONY",
+      "captured_at": "2019:03:15 09:36:24",
+      "exposure_time": [
+        1,
+        160
+      ],
+      "f_number": [
+        28,
+        5
+      ],
+      "iso": 320,
+      "focal_length": [
+        90,
+        1
+      ]
+    },
+    "supported": true,
+    "warnings": []
+  },
+  "runs": [
+    {
+      "run": 1,
+      "preview_seconds": 18.762912000000142,
+      "export_seconds": 9.483999999999924,
+      "export_status": "completed"
+    },
+    {
+      "run": 2,
+      "preview_seconds": 10.205052699999897,
+      "export_seconds": 11.218999999999824,
+      "export_status": "completed"
+    },
+    {
+      "run": 3,
+      "preview_seconds": 0.07278259999998227,
+      "export_seconds": 10.015999999999849,
+      "export_status": "completed"
+    },
+    {
+      "run": 4,
+      "preview_seconds": 0.06618119999984629,
+      "export_seconds": 9.843000000000075,
+      "export_status": "completed"
+    },
+    {
+      "run": 5,
+      "preview_seconds": 0.07028669999999693,
+      "export_seconds": 9.469000000000051,
+      "export_status": "completed"
+    },
+    {
+      "run": 6,
+      "preview_seconds": 0.06331260000001748,
+      "export_seconds": 9.063000000000102,
+      "export_status": "completed"
+    },
+    {
+      "run": 7,
+      "preview_seconds": 0.06240909999996802,
+      "export_seconds": 8.625,
+      "export_status": "completed"
+    },
+    {
+      "run": 8,
+      "preview_seconds": 0.06416340000009768,
+      "export_seconds": 8.718000000000075,
+      "export_status": "completed"
+    },
+    {
+      "run": 9,
+      "preview_seconds": 0.06229529999995975,
+      "export_seconds": 8.6400000000001,
+      "export_status": "completed"
+    },
+    {
+      "run": 10,
+      "preview_seconds": 0.06253489999994599,
+      "export_seconds": 8.922000000000025,
+      "export_status": "completed"
+    },
+    {
+      "run": 11,
+      "preview_seconds": 0.05833840000013879,
+      "export_seconds": 9.625,
+      "export_status": "completed"
+    },
+    {
+      "run": 12,
+      "preview_seconds": 0.06200479999984054,
+      "export_seconds": 9.234000000000151,
+      "export_status": "completed"
+    },
+    {
+      "run": 13,
+      "preview_seconds": 0.06152639999982057,
+      "export_seconds": 8.577999999999975,
+      "export_status": "completed"
+    },
+    {
+      "run": 14,
+      "preview_seconds": 0.06046209999999519,
+      "export_seconds": 8.922000000000025,
+      "export_status": "completed"
+    },
+    {
+      "run": 15,
+      "preview_seconds": 0.0584686000001966,
+      "export_seconds": 9.469000000000051,
+      "export_status": "completed"
+    },
+    {
+      "run": 16,
+      "preview_seconds": 0.058703599999944345,
+      "export_seconds": 9.093999999999824,
+      "export_status": "completed"
+    },
+    {
+      "run": 17,
+      "preview_seconds": 0.05805399999985639,
+      "export_seconds": 8.5,
+      "export_status": "completed"
+    },
+    {
+      "run": 18,
+      "preview_seconds": 0.061279300000023795,
+      "export_seconds": 8.70399999999995,
+      "export_status": "completed"
+    },
+    {
+      "run": 19,
+      "preview_seconds": 0.05550849999985985,
+      "export_seconds": 8.719000000000051,
+      "export_status": "completed"
+    },
+    {
+      "run": 20,
+      "preview_seconds": 0.05641270000000986,
+      "export_seconds": 8.4849999999999,
+      "export_status": "completed"
+    }
+  ],
+  "preview_p95_seconds": 10.205052699999897,
+  "notes": "First run cold; second style reuses decoded baseline; later identical preview settings reuse PNG. Exports process full resolution every run. Peak engine RSS excludes desktop GUI process. This is one photo repeated20 times, not a20-photo acceptance corpus.",
+  "export_p95_seconds": 10.015999999999849
+}

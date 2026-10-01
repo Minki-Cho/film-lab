@@ -1,0 +1,25 @@
+{
+  "id": "baseline",
+  "version": "1.0.0",
+  "input_space": "sRGB_D65_encoded",
+  "output_space": "sRGB_D65_encoded",
+  "grid_size": 0,
+  "sha256": "881236ec2c64ab53e0b9636344d1b967e0d98b28f715053b87c89aea9a588a3d",
+  "baseline_version": "1.0.0",
+  "kind": "baseline",
+  "asset": "curve.json",
+  "source": {
+    "creator": "Film Lab project",
+    "method": "Original mathematical transform authored in tools/generate_profiles.py",
+    "reference_camera": null,
+    "calibration_images": 0,
+    "validation_images": 0
+  },
+  "license": {
+    "spdx": "MIT",
+    "redistribution": "Use, modification and redistribution permitted under the bundled MIT license."
+  },
+  "validation_status": "initial_style",
+  "description": "카메라 색 변환과 고정된 기본 명암 곡선",
+  "notice": "필름 느낌을 위한 자체 제작 초기 스타일입니다. 참고 사진으로 정밀 보정하기 전 단계입니다."
+}

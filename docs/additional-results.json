@@ -1,0 +1,119 @@
+{
+  "final_pipeline": true,
+  "real_raw_count": 2,
+  "source_sha256_before": {
+    "test-data\\sony_a6400_01.arw": "d02004c1b918a3ac17718171a9dcab1c0b9e91ff0d4516106c675e44f87b6be4",
+    "test-data\\sony_a6400_03.arw": "e3e3286c2dde3c2c1a546e532fb20141aa0e1986fd97f38b48a8b06e05c39fe3"
+  },
+  "source_sha256_after": {
+    "test-data\\sony_a6400_01.arw": "d02004c1b918a3ac17718171a9dcab1c0b9e91ff0d4516106c675e44f87b6be4",
+    "test-data\\sony_a6400_03.arw": "e3e3286c2dde3c2c1a546e532fb20141aa0e1986fd97f38b48a8b06e05c39fe3"
+  },
+  "source_listing_before": [
+    "sony_a6400_01.arw",
+    "sony_a6400_03.arw"
+  ],
+  "source_listing_after": [
+    "sony_a6400_01.arw",
+    "sony_a6400_03.arw"
+  ],
+  "batch": [
+    {
+      "status": "failed",
+      "path": null,
+      "recipe_path": null,
+      "error": "RAW 내용을 읽을 수 없습니다: broken.arw: b'Input/output error'",
+      "source": "test-output\\integration\\final\\invalid-source\\broken.arw",
+      "elapsed_seconds": 0.0,
+      "batch_csv": "test-output\\integration\\final\\batch\\batch_20261001_080840.csv"
+    },
+    {
+      "status": "completed",
+      "path": "test-output\\integration\\final\\batch\\sony_a6400_01_BASE_v1.jpg",
+      "recipe_path": "test-output\\integration\\final\\batch\\sony_a6400_01_BASE_v1.recipe.json",
+      "error": null,
+      "source": "test-data\\sony_a6400_01.arw",
+      "elapsed_seconds": 4.156999999999925,
+      "warnings": [
+        "센서 포화 픽셀 0.014%: 기록되지 않은 밝은 정보는 복원되지 않습니다.",
+        "16비트 현상 출력의 포화 채널 0.012% (센서 포화와 별도 검사)."
+      ],
+      "batch_csv": "test-output\\integration\\final\\batch\\batch_20261001_080840.csv"
+    },
+    {
+      "status": "completed",
+      "path": "test-output\\integration\\final\\batch\\sony_a6400_03_BASE_v1.jpg",
+      "recipe_path": "test-output\\integration\\final\\batch\\sony_a6400_03_BASE_v1.recipe.json",
+      "error": null,
+      "source": "test-data\\sony_a6400_03.arw",
+      "elapsed_seconds": 13.312999999999874,
+      "warnings": [
+        "센서 포화 픽셀 1.114%: 기록되지 않은 밝은 정보는 복원되지 않습니다.",
+        "16비트 현상 출력의 포화 채널 0.921% (센서 포화와 별도 검사)."
+      ],
+      "batch_csv": "test-output\\integration\\final\\batch\\batch_20261001_080840.csv"
+    }
+  ],
+  "batch_progress_count": 3,
+  "grain_runs": [
+    {
+      "status": "completed",
+      "path": "test-output\\integration\\final\\grain\\sony_a6400_01_CC_v1.jpg",
+      "recipe_path": "test-output\\integration\\final\\grain\\sony_a6400_01_CC_v1.recipe.json",
+      "error": null,
+      "source": "test-data\\sony_a6400_01.arw",
+      "elapsed_seconds": 10.265999999999849,
+      "warnings": [
+        "센서 포화 픽셀 0.014%: 기록되지 않은 밝은 정보는 복원되지 않습니다.",
+        "16비트 현상 출력의 포화 채널 0.012% (센서 포화와 별도 검사)."
+      ],
+      "decoded_pixel_sha256": "a5726d80a02b1c29e539357c014adfd2ee463a942cb029248fdf17797119dfea"
+    },
+    {
+      "status": "completed",
+      "path": "test-output\\integration\\final\\grain\\sony_a6400_01_CC_v1_001.jpg",
+      "recipe_path": "test-output\\integration\\final\\grain\\sony_a6400_01_CC_v1_001.recipe.json",
+      "error": null,
+      "source": "test-data\\sony_a6400_01.arw",
+      "elapsed_seconds": 11.687000000000126,
+      "warnings": [
+        "센서 포화 픽셀 0.014%: 기록되지 않은 밝은 정보는 복원되지 않습니다.",
+        "16비트 현상 출력의 포화 채널 0.012% (센서 포화와 별도 검사)."
+      ],
+      "decoded_pixel_sha256": "a5726d80a02b1c29e539357c014adfd2ee463a942cb029248fdf17797119dfea"
+    }
+  ],
+  "grain_decoded_pixel_hash_equal": true,
+  "source03_inspection": {
+    "id": "test-data\\sony_a6400_03.arw",
+    "path": "test-data\\sony_a6400_03.arw",
+    "size_bytes": 25266944,
+    "mtime_ns": 1790856231778262700,
+    "sha256": "e3e3286c2dde3c2c1a546e532fb20141aa0e1986fd97f38b48a8b06e05c39fe3",
+    "camera_model": "ILCE-6400",
+    "width": 6024,
+    "height": 4024,
+    "rotation": 0,
+    "libraw_flip": 0,
+    "metadata": {
+      "camera_model": "ILCE-6400",
+      "make": "SONY",
+      "captured_at": "2019:03:15 09:37:14",
+      "exposure_time": [
+        1,
+        30
+      ],
+      "f_number": [
+        7,
+        2
+      ],
+      "iso": 160,
+      "focal_length": [
+        18,
+        1
+      ]
+    },
+    "supported": true,
+    "warnings": []
+  }
+}

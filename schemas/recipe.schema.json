@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://filmlab.local/schema/recipe-1.json",
+  "title": "FILM LAB recipe v1",
+  "type": "object",
+  "required": ["schema_version", "engine_version", "source", "profile", "settings", "raw_processing", "libraries", "baseline_version"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "engine_version": {"const": "1.0.0"},
+    "baseline_version": {"const": "1.0.0"},
+    "source": {
+      "type": "object",
+      "required": ["id", "path", "size_bytes", "mtime_ns", "sha256", "camera_model"],
+      "properties": {
+        "id": {"type": "string"}, "path": {"type": "string"},
+        "size_bytes": {"type": "integer", "minimum": 1},
+        "mtime_ns": {"type": "integer"},
+        "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "camera_model": {"const": "ILCE-6400"}
+      }
+    },
+    "profile": {
+      "type": "object", "required": ["id", "version", "sha256", "baseline_version"],
+      "properties": {"id": {"type": "string"}, "version": {"const": "1.0.0"}, "baseline_version": {"const": "1.0.0"}, "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}}
+    },
+    "settings": {
+      "type": "object", "additionalProperties": false,
+      "required": ["exposure_ev", "wb_mode", "warmth", "tint", "style_id", "style_version", "strength", "contrast", "saturation", "highlights", "shadows", "grain"],
+      "properties": {
+        "exposure_ev": {"type": "number", "minimum": -2, "maximum": 3, "multipleOf": 0.1},
+        "wb_mode": {"enum": ["as_shot", "relative"]},
+        "warmth": {"$ref": "#/$defs/control"}, "tint": {"$ref": "#/$defs/control"},
+        "style_id": {"enum": ["baseline", "documentary", "negative", "cinema", "vivid", "monochrome"]},
+        "style_version": {"const": "1.0.0"},
+        "strength": {"type": "number", "minimum": 0, "maximum": 1},
+        "contrast": {"$ref": "#/$defs/control"}, "saturation": {"$ref": "#/$defs/control"},
+        "highlights": {"$ref": "#/$defs/control"}, "shadows": {"$ref": "#/$defs/control"},
+        "grain": {
+          "type": "object", "additionalProperties": false, "required": ["amount", "size", "seed"],
+          "properties": {"amount": {"type": "integer", "minimum": 0, "maximum": 100}, "size": {"enum": ["small", "large"]}, "seed": {"type": "integer", "minimum": 0, "maximum": 4294967295}}
+        }
+      }
+    },
+    "raw_processing": {"type": "object", "required": ["applied_wb", "working_space", "working_white_point"], "properties": {"applied_wb": {"type": "array", "minItems": 4, "maxItems": 4, "items": {"type": "number", "exclusiveMinimum": 0}}}},
+    "libraries": {"type": "object"},
+    "export": {"type": "object", "properties": {"format": {"enum": ["jpeg", "tiff"]}, "quality": {"type": "integer", "minimum": 80, "maximum": 100}, "color_space": {"const": "sRGB"}, "long_edge": {"enum": [null, 2048, 3840]}}},
+    "output": {"type": "object"}
+  },
+  "$defs": {"control": {"type": "integer", "minimum": -100, "maximum": 100}}
+}

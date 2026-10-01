@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "a6400-film-lab"
+version = "1.0.0"
+description = "Offline Sony a6400 RAW film style editor"
+requires-python = ">=3.12,<3.13"
+dynamic = ["dependencies"]
+
+[project.scripts]
+film-lab = "film_lab.__main__:main"
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+[tool.setuptools.packages.find]
+include = ["film_lab*"]
+
+[tool.setuptools.package-data]
+film_lab = ["data/profiles/*/*", "data/profiles/LICENSE.txt"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"

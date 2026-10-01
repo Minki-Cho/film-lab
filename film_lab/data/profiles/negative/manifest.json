@@ -1,0 +1,25 @@
+{
+  "id": "negative",
+  "version": "1.0.0",
+  "input_space": "sRGB_D65_encoded",
+  "output_space": "sRGB_D65_encoded",
+  "grid_size": 33,
+  "sha256": "54f075fc36dd63a86e944cc0bd00ae6c38fcdb5c087f0f5401c3af0b9219e7eb",
+  "baseline_version": "1.0.0",
+  "kind": "cube",
+  "asset": "style.cube",
+  "source": {
+    "creator": "Film Lab project",
+    "method": "Original mathematical transform authored in tools/generate_profiles.py",
+    "reference_camera": null,
+    "calibration_images": 0,
+    "validation_images": 0
+  },
+  "license": {
+    "spdx": "MIT",
+    "redistribution": "Use, modification and redistribution permitted under the bundled MIT license."
+  },
+  "validation_status": "initial_style",
+  "description": "밝기에 따른 색 변화, 깊은 대비와 녹색 표현",
+  "notice": "필름 느낌을 위한 자체 제작 초기 스타일입니다. 참고 사진으로 정밀 보정하기 전 단계입니다."
+}

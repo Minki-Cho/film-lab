@@ -1,0 +1,229 @@
+{
+  "final_pipeline": true,
+  "real_raw_count": 2,
+  "baseline_jpeg": {
+    "status": "completed",
+    "path": "test-output\\integration\\final\\sony_a6400_01_BASE_v1.jpg",
+    "recipe_path": "test-output\\integration\\final\\sony_a6400_01_BASE_v1.recipe.json",
+    "error": null,
+    "source": "test-data\\sony_a6400_01.arw",
+    "elapsed_seconds": 8.9849999999999,
+    "warnings": [
+      "센서 포화 픽셀 0.014%: 기록되지 않은 밝은 정보는 복원되지 않습니다.",
+      "16비트 현상 출력의 포화 채널 0.012% (센서 포화와 별도 검사)."
+    ]
+  },
+  "documentary_tiff": {
+    "status": "completed",
+    "path": "test-output\\integration\\final\\sony_a6400_01_CC_v1.tiff",
+    "recipe_path": "test-output\\integration\\final\\sony_a6400_01_CC_v1.recipe.json",
+    "error": null,
+    "source": "test-data\\sony_a6400_01.arw",
+    "elapsed_seconds": 11.0150000000001,
+    "warnings": [
+      "센서 포화 픽셀 0.014%: 기록되지 않은 밝은 정보는 복원되지 않습니다.",
+      "16비트 현상 출력의 포화 채널 0.012% (센서 포화와 별도 검사)."
+    ]
+  },
+  "preview_seconds": 11.656999999999925,
+  "cached_preview_seconds": 0.047000000000025466,
+  "preview_dimensions": [
+    2048,
+    1368
+  ],
+  "preview_path": "test-output\\cache\\091921c33f441e6b2e486bc14fd6094ea937907928d527017f361449ec644cb0.png",
+  "baseline_preview_path": "test-output\\cache\\72de6a19b09d369cefc446cd8d18d6b9f569056d92988fb143476711c667698b.png",
+  "preview_vs_resized_tiff": {
+    "max_encoded_error": 0.0019649863243103027,
+    "mean_encoded_error": 0.0009804584551602602
+  },
+  "strength_zero_pixel_exact": true,
+  "source_sha256_before": {
+    "test-data\\sony_a6400_01.arw": "d02004c1b918a3ac17718171a9dcab1c0b9e91ff0d4516106c675e44f87b6be4",
+    "test-data\\sony_a6400_03.arw": "e3e3286c2dde3c2c1a546e532fb20141aa0e1986fd97f38b48a8b06e05c39fe3"
+  },
+  "source_sha256_after": {
+    "test-data\\sony_a6400_01.arw": "d02004c1b918a3ac17718171a9dcab1c0b9e91ff0d4516106c675e44f87b6be4",
+    "test-data\\sony_a6400_03.arw": "e3e3286c2dde3c2c1a546e532fb20141aa0e1986fd97f38b48a8b06e05c39fe3"
+  },
+  "source_listing_before": [
+    "sony_a6400_01.arw",
+    "sony_a6400_03.arw"
+  ],
+  "source_listing_after": [
+    "sony_a6400_01.arw",
+    "sony_a6400_03.arw"
+  ],
+  "batch": [
+    {
+      "status": "failed",
+      "path": null,
+      "recipe_path": null,
+      "error": "RAW 내용을 읽을 수 없습니다: broken.arw: b'Input/output error'",
+      "source": "test-output\\integration\\final\\invalid-source\\broken.arw",
+      "elapsed_seconds": 0.0,
+      "batch_csv": "test-output\\integration\\final\\batch\\batch_20261001_080840.csv"
+    },
+    {
+      "status": "completed",
+      "path": "test-output\\integration\\final\\batch\\sony_a6400_01_BASE_v1.jpg",
+      "recipe_path": "test-output\\integration\\final\\batch\\sony_a6400_01_BASE_v1.recipe.json",
+      "error": null,
+      "source": "test-data\\sony_a6400_01.arw",
+      "elapsed_seconds": 4.156999999999925,
+      "warnings": [
+        "센서 포화 픽셀 0.014%: 기록되지 않은 밝은 정보는 복원되지 않습니다.",
+        "16비트 현상 출력의 포화 채널 0.012% (센서 포화와 별도 검사)."
+      ],
+      "batch_csv": "test-output\\integration\\final\\batch\\batch_20261001_080840.csv"
+    },
+    {
+      "status": "completed",
+      "path": "test-output\\integration\\final\\batch\\sony_a6400_03_BASE_v1.jpg",
+      "recipe_path": "test-output\\integration\\final\\batch\\sony_a6400_03_BASE_v1.recipe.json",
+      "error": null,
+      "source": "test-data\\sony_a6400_03.arw",
+      "elapsed_seconds": 13.312999999999874,
+      "warnings": [
+        "센서 포화 픽셀 1.114%: 기록되지 않은 밝은 정보는 복원되지 않습니다.",
+        "16비트 현상 출력의 포화 채널 0.921% (센서 포화와 별도 검사)."
+      ],
+      "batch_csv": "test-output\\integration\\final\\batch\\batch_20261001_080840.csv"
+    }
+  ],
+  "batch_progress_count": 3,
+  "grain_runs": [
+    {
+      "status": "completed",
+      "path": "test-output\\integration\\final\\grain\\sony_a6400_01_CC_v1.jpg",
+      "recipe_path": "test-output\\integration\\final\\grain\\sony_a6400_01_CC_v1.recipe.json",
+      "error": null,
+      "source": "test-data\\sony_a6400_01.arw",
+      "elapsed_seconds": 10.265999999999849,
+      "warnings": [
+        "센서 포화 픽셀 0.014%: 기록되지 않은 밝은 정보는 복원되지 않습니다.",
+        "16비트 현상 출력의 포화 채널 0.012% (센서 포화와 별도 검사)."
+      ],
+      "decoded_pixel_sha256": "a5726d80a02b1c29e539357c014adfd2ee463a942cb029248fdf17797119dfea"
+    },
+    {
+      "status": "completed",
+      "path": "test-output\\integration\\final\\grain\\sony_a6400_01_CC_v1_001.jpg",
+      "recipe_path": "test-output\\integration\\final\\grain\\sony_a6400_01_CC_v1_001.recipe.json",
+      "error": null,
+      "source": "test-data\\sony_a6400_01.arw",
+      "elapsed_seconds": 11.687000000000126,
+      "warnings": [
+        "센서 포화 픽셀 0.014%: 기록되지 않은 밝은 정보는 복원되지 않습니다.",
+        "16비트 현상 출력의 포화 채널 0.012% (센서 포화와 별도 검사)."
+      ],
+      "decoded_pixel_sha256": "a5726d80a02b1c29e539357c014adfd2ee463a942cb029248fdf17797119dfea"
+    }
+  ],
+  "grain_decoded_pixel_hash_equal": true,
+  "source03_inspection": {
+    "id": "test-data\\sony_a6400_03.arw",
+    "path": "test-data\\sony_a6400_03.arw",
+    "size_bytes": 25266944,
+    "mtime_ns": 1790856231778262700,
+    "sha256": "e3e3286c2dde3c2c1a546e532fb20141aa0e1986fd97f38b48a8b06e05c39fe3",
+    "camera_model": "ILCE-6400",
+    "width": 6024,
+    "height": 4024,
+    "rotation": 0,
+    "libraw_flip": 0,
+    "metadata": {
+      "camera_model": "ILCE-6400",
+      "make": "SONY",
+      "captured_at": "2019:03:15 09:37:14",
+      "exposure_time": [
+        1,
+        30
+      ],
+      "f_number": [
+        7,
+        2
+      ],
+      "iso": 160,
+      "focal_length": [
+        18,
+        1
+      ]
+    },
+    "supported": true,
+    "warnings": []
+  },
+  "raw_processing": {
+    "camera_wb": [
+      2576.0,
+      1024.0,
+      1812.0,
+      1024.0
+    ],
+    "applied_wb": [
+      2576.0,
+      1024.0,
+      1812.0,
+      1024.0
+    ],
+    "requested_wb": [
+      2576.0,
+      1024.0,
+      1812.0,
+      1024.0
+    ],
+    "applied_wb_provenance": "explicit camera/user multipliers",
+    "wb_fallback": false,
+    "use_camera_wb": true,
+    "black_level_per_channel": [
+      512,
+      512,
+      512,
+      512
+    ],
+    "white_level_per_channel": [
+      15360,
+      15360,
+      15360,
+      15360
+    ],
+    "sensor_saturation_fraction": 0.00014380846395729212,
+    "decoder_space": "linear LibRaw ProPhoto RGB",
+    "decoder_white_point": "D65 (adapted ProPhoto primaries)",
+    "decoder_normalization_version": "1.0.0",
+    "decoder_normalization_sha256": "b8aa2a2644fd272647a65ef62317ca998f4108ae9c188361b6fdc5243773b4eb",
+    "working_space": "linear ProPhoto RGB",
+    "working_white_point": "D50",
+    "output_color_space": "sRGB D65",
+    "output_orientation": 1,
+    "demosaic": "AHD",
+    "gamma": [
+      1,
+      1
+    ],
+    "half_size": false,
+    "adjust_maximum_thr": 0.0,
+    "exp_shift": 1.0,
+    "developed_saturation_fraction": 0.00011897407058314126
+  },
+  "baseline_profile": {
+    "id": "baseline",
+    "version": "1.0.0",
+    "sha256": "881236ec2c64ab53e0b9636344d1b967e0d98b28f715053b87c89aea9a588a3d",
+    "baseline_version": "1.0.0"
+  },
+  "library_versions": {
+    "rawpy": "0.25.1",
+    "numpy": "2.2.6",
+    "Pillow": "11.3.0",
+    "tifffile": "2025.9.20",
+    "ExifRead": "3.5.1",
+    "LibRaw": "0.21.4"
+  },
+  "notes": [
+    "Final explicit LibRaw-to-canonical-ProPhoto normalization pipeline.",
+    "Preview RGB error includes TIFF16/PNG8 quantization; CIEDE2000 not measured.",
+    "Two actual RAW inputs; 20-image acceptance corpus remains untested.",
+    "Repeated timing report is in benchmark.json."
+  ]
+}

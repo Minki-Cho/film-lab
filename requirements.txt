@@ -1,0 +1,6 @@
+numpy==2.2.6
+Pillow==11.3.0
+PySide6==6.9.2
+rawpy==0.25.1
+tifffile==2025.9.20
+ExifRead==3.5.1
