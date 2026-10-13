@@ -1,0 +1,25 @@
+{
+  "id": "cinema",
+  "version": "1.0.0",
+  "input_space": "sRGB_D65_encoded",
+  "output_space": "sRGB_D65_encoded",
+  "grid_size": 33,
+  "sha256": "b578ac751ee71e443367ec8969cdadae691ee5d8d40b0f6e55291ff6a2911cb0",
+  "baseline_version": "1.0.0",
+  "kind": "cube",
+  "asset": "style.cube",
+  "source": {
+    "creator": "Film Lab project",
+    "method": "Original mathematical transform authored in tools/generate_profiles.py",
+    "reference_camera": null,
+    "calibration_images": 0,
+    "validation_images": 0
+  },
+  "license": {
+    "spdx": "MIT",
+    "redistribution": "Use, modification and redistribution permitted under the bundled MIT license."
+  },
+  "validation_status": "initial_style",
+  "description": "낮은 채도와 부드러운 명암, 완만한 하이라이트",
+  "notice": "필름 느낌을 위한 자체 제작 초기 스타일입니다. 참고 사진으로 정밀 보정하기 전 단계입니다."
+}

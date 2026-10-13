@@ -16,3 +16,8 @@ test-artifacts/
 .env
 .env.*
 !.env.example
+.android-tools/
+android/local.properties
+android/.gradle/
+release/
+*.class

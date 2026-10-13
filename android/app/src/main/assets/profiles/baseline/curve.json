@@ -1,0 +1,9 @@
+{
+  "version": "1.0.0",
+  "input": "linear ProPhoto RGB D50",
+  "output": "encoded sRGB D65",
+  "adaptation": "Bradford D50 to D65",
+  "tone": "T(Y)=min(1,1.25*Y/(1+0.25*Y))",
+  "gamut": "equal-luminance chroma compression; 0.8 knee; exponential shoulder",
+  "implementation": "film_lab/color.py:baseline_render"
+}

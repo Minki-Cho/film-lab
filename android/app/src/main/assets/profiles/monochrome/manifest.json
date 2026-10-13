@@ -1,0 +1,25 @@
+{
+  "id": "monochrome",
+  "version": "1.0.0",
+  "input_space": "sRGB_D65_encoded",
+  "output_space": "sRGB_D65_encoded",
+  "grid_size": 0,
+  "sha256": "4013a0e4ce6c73384afce44d30c6bcce8b8bb865fd4e1ed16833b380a8f5d45c",
+  "baseline_version": "1.0.0",
+  "kind": "monochrome",
+  "asset": "curve.json",
+  "source": {
+    "creator": "Film Lab project",
+    "method": "Original mathematical transform authored in tools/generate_profiles.py",
+    "reference_camera": null,
+    "calibration_images": 0,
+    "validation_images": 0
+  },
+  "license": {
+    "spdx": "MIT",
+    "redistribution": "Use, modification and redistribution permitted under the bundled MIT license."
+  },
+  "validation_status": "initial_style",
+  "description": "색상별 명도 기여도와 전용 곡선으로 만든 흑백 계조",
+  "notice": "필름 느낌을 위한 자체 제작 초기 스타일입니다. 참고 사진으로 정밀 보정하기 전 단계입니다."
+}

@@ -2,6 +2,10 @@
 
 Sony a6400의 ARW와 JPEG·PNG·TIFF·WebP·BMP 사진을 PC에서 편집하고 **필름 느낌**으로 저장하는 Windows 데스크톱 앱입니다. 기본 기능은 인터넷이나 계정 없이 실행됩니다.
 
+**Android 앱:** [APK 바로 다운로드](https://github.com/Minki-Cho/film-lab/releases/download/android-v1.0.0/FilmLab-Android-1.0.0.apk) · [릴리스 페이지](https://github.com/Minki-Cho/film-lab/releases/tag/android-v1.0.0) · [설치·빌드 안내](android/README.md)
+
+Android 9 이상에서 실행됩니다. 모바일은 일반 사진과 ARW 내장 JPEG 편집 및 JPEG 저장을 지원하며, PC의 전체 RAW 현상 기능과 지원 범위가 다릅니다.
+
 ## 빠른 시작
 
 Windows 11 x64와 Python 3.12 x64를 사용합니다. 저장소를 복제하거나 ZIP으로 내려받은 뒤 프로젝트 폴더에서 PowerShell을 실행하세요.

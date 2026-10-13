@@ -1,0 +1,25 @@
+{
+  "id": "vivid",
+  "version": "1.0.0",
+  "input_space": "sRGB_D65_encoded",
+  "output_space": "sRGB_D65_encoded",
+  "grid_size": 33,
+  "sha256": "1af7460ffd6c3ff4cf8e2a393361ec8eb3db9ce9d06e89c49cbce903ac615970",
+  "baseline_version": "1.0.0",
+  "kind": "cube",
+  "asset": "style.cube",
+  "source": {
+    "creator": "Film Lab project",
+    "method": "Original mathematical transform authored in tools/generate_profiles.py",
+    "reference_camera": null,
+    "calibration_images": 0,
+    "validation_images": 0
+  },
+  "license": {
+    "spdx": "MIT",
+    "redistribution": "Use, modification and redistribution permitted under the bundled MIT license."
+  },
+  "validation_status": "initial_style",
+  "description": "풍경의 선명한 녹색과 파랑, 강한 대비",
+  "notice": "필름 느낌을 위한 자체 제작 초기 스타일입니다. 참고 사진으로 정밀 보정하기 전 단계입니다."
+}
