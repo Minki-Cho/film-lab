@@ -1,4 +1,4 @@
-"""Render a real Qt window and optionally exercise RAW through the spawned worker."""
+"""Render a real Qt window and optionally load a photo through the spawned worker."""
 import argparse
 import os
 from pathlib import Path

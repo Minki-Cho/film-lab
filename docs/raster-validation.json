@@ -1,0 +1,100 @@
+{
+  "automated_tests": 127,
+  "automated_tests_passed": 127,
+  "fixtures": "Five synthetic raster images and one previously validated Sony a6400 RAW sample",
+  "packaged_mixed_batch": [
+    {
+      "input": "alpha.PNG",
+      "input_format": "PNG",
+      "source_kind": "raster",
+      "status": "completed",
+      "output_shape": [
+        640,
+        960,
+        3
+      ],
+      "output_dtype": "uint16",
+      "icc_present": true,
+      "orientation": 1,
+      "recipe_processing": "image_processing"
+    },
+    {
+      "input": "gradient.bmp",
+      "input_format": "BMP",
+      "source_kind": "raster",
+      "status": "completed",
+      "output_shape": [
+        640,
+        960,
+        3
+      ],
+      "output_dtype": "uint16",
+      "icc_present": true,
+      "orientation": 1,
+      "recipe_processing": "image_processing"
+    },
+    {
+      "input": "gradient.JpG",
+      "input_format": "JPEG",
+      "source_kind": "raster",
+      "status": "completed",
+      "output_shape": [
+        960,
+        640,
+        3
+      ],
+      "output_dtype": "uint16",
+      "icc_present": true,
+      "orientation": 1,
+      "recipe_processing": "image_processing"
+    },
+    {
+      "input": "gradient.webp",
+      "input_format": "WEBP",
+      "source_kind": "raster",
+      "status": "completed",
+      "output_shape": [
+        640,
+        960,
+        3
+      ],
+      "output_dtype": "uint16",
+      "icc_present": true,
+      "orientation": 1,
+      "recipe_processing": "image_processing"
+    },
+    {
+      "input": "precision.tiff",
+      "input_format": "TIFF",
+      "source_kind": "raster",
+      "status": "completed",
+      "output_shape": [
+        640,
+        960,
+        3
+      ],
+      "output_dtype": "uint16",
+      "icc_present": true,
+      "orientation": 1,
+      "recipe_processing": "image_processing"
+    },
+    {
+      "input": "sony_a6400_01.arw",
+      "input_format": "ARW",
+      "source_kind": "raw",
+      "status": "completed",
+      "output_shape": [
+        1368,
+        2048,
+        3
+      ],
+      "output_dtype": "uint16",
+      "icc_present": true,
+      "orientation": 1,
+      "recipe_processing": "raw_processing"
+    }
+  ],
+  "source_hashes_unchanged": true,
+  "gui_smoke": "passed: packaged executable + spawned worker + oriented JPEG preview",
+  "gui_screenshot": "test-output/packaged-raster.png"
+}

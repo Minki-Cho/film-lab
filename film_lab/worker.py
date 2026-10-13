@@ -1,4 +1,4 @@
-"""A single spawned process performs RAW IO and processing outside the Qt thread."""
+"""A single spawned process reads and processes photographs outside the Qt thread."""
 from __future__ import annotations
 
 from pathlib import Path

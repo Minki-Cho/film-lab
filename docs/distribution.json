@@ -2,22 +2,19 @@
   "name": "FilmLab",
   "version": "1.0.0",
   "platform": "Windows 11 x64",
-  "gui_smoke": "passed: packaged executable + spawned worker + real Sony ARW preview",
-  "gui_screenshot": "test-output/neutral-gui.png",
-  "automated_tests": 60,
+  "gui_smoke": "passed: packaged executable + spawned worker + oriented JPEG preview",
+  "gui_screenshot": "test-output/packaged-raster.png",
+  "automated_tests": 127,
   "executables": {
-    "film-lab-cli.exe": "9a9ff79b99390f99231cb9fa28b8c9e4ce44bce483891abdaa8680349e9efd98",
-    "FilmLab.exe": "f1f7dde4abc623f33e03ce7b5a59dad3d7d5787ec9d7401c8944680e0e8f4b3f"
+    "film-lab-cli.exe": "967c219f5be8def383e0c19a1e9f361d5e7b0193dd3a9b2148a92cd02539873f",
+    "FilmLab.exe": "e8ff50bacdeddb6b32e3925b56e977f2588bbf004618f940edc297f52b562a8c"
   },
   "packaged_export": {
     "status": "completed",
     "format": "TIFF",
     "style_id": "documentary",
-    "shape": [
-      1368,
-      2048,
-      3
-    ],
+    "mixed_raw_and_raster": true,
+    "files": 6,
     "dtype": "uint16",
     "icc_present": true,
     "orientation": 1,

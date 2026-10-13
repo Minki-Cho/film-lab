@@ -90,7 +90,7 @@ def test_cache_cannot_write_into_original_folder(tmp_path, monkeypatch):
     source.write_bytes(b"original folder path guard fixture")
     monkeypatch.setattr(engine, "_check_source", lambda *_: {"path": str(source)})
     monkeypatch.setattr(engine, "_baseline", lambda *_: pytest.fail("Must reject cache before RAW decoding"))
-    with pytest.raises(ValueError, match="캐시는 RAW 원본 폴더와 다른 폴더"):
+    with pytest.raises(ValueError, match="캐시는 원본 사진 폴더와 다른 폴더"):
         engine.render(source, default_settings(), cache_dir=tmp_path)
     assert list(tmp_path.iterdir()) == [source]
 

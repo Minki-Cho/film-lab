@@ -139,7 +139,7 @@ def baseline_render(linear_prophoto: np.ndarray) -> np.ndarray:
 def apply_adjustments(encoded_rgb: np.ndarray, settings: Mapping) -> np.ndarray:
     """Apply post-style tone controls and linear-light saturation.
 
-    Exposure and relative WB belong exclusively to RAW development. Contrast and
+    Exposure and relative WB belong to input preparation, before styles. Contrast and
     tonal masks use encoded sRGB; saturation is explicitly decoded to linear
     sRGB and re-encoded exactly once. Neutral controls are a bit-exact identity.
     """

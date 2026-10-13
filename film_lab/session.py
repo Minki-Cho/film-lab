@@ -59,7 +59,7 @@ class PhotoState:
 
 
 class Session:
-    """A project never writes beside its RAW inputs."""
+    """Project state and immutable export settings for all supported inputs."""
 
     def __init__(self, path=None):
         self.path = Path(path) if path else None

@@ -3,7 +3,19 @@
   "$id": "https://filmlab.local/schema/recipe-1.json",
   "title": "FILM LAB recipe v1",
   "type": "object",
-  "required": ["schema_version", "engine_version", "source", "profile", "settings", "raw_processing", "libraries", "baseline_version"],
+  "required": ["schema_version", "engine_version", "source", "profile", "settings", "libraries", "baseline_version"],
+  "oneOf": [
+    {
+      "required": ["raw_processing"],
+      "properties": {"source": {"properties": {"source_kind": {"const": "raw"}, "camera_model": {"const": "ILCE-6400"}}}},
+      "not": {"required": ["image_processing"]}
+    },
+    {
+      "required": ["image_processing"],
+      "properties": {"source": {"required": ["source_kind"], "properties": {"source_kind": {"const": "raster"}}}},
+      "not": {"required": ["raw_processing"]}
+    }
+  ],
   "properties": {
     "schema_version": {"const": 1},
     "engine_version": {"const": "1.0.0"},
@@ -16,7 +28,9 @@
         "size_bytes": {"type": "integer", "minimum": 1},
         "mtime_ns": {"type": "integer"},
         "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
-        "camera_model": {"const": "ILCE-6400"}
+        "camera_model": {"type": "string"},
+        "source_kind": {"enum": ["raw", "raster"]},
+        "image_format": {"enum": ["ARW", "JPEG", "PNG", "TIFF", "WEBP", "BMP"]}
       }
     },
     "profile": {
@@ -42,6 +56,24 @@
       }
     },
     "raw_processing": {"type": "object", "required": ["applied_wb", "working_space", "working_white_point"], "properties": {"applied_wb": {"type": "array", "minItems": 4, "maxItems": 4, "items": {"type": "number", "exclusiveMinimum": 0}}}},
+    "image_processing": {
+      "type": "object",
+      "required": ["importer_version", "input_format", "input_bit_depth", "color_policy", "working_space", "working_white_point", "relative_wb_multipliers", "baseline_curve_applied", "output_orientation"],
+      "properties": {
+        "importer_version": {"const": "1.0.0"},
+        "input_format": {"enum": ["JPEG", "PNG", "TIFF", "WEBP", "BMP"]},
+        "input_bit_depth": {"enum": [8, 16]},
+        "input_icc_sha256": {"type": ["string", "null"], "pattern": "^[a-f0-9]{64}$"},
+        "color_policy": {"enum": ["assumed_sRGB", "embedded_standard_sRGB", "converted_embedded_ICC_to_sRGB", "declared_BMP_sRGB"]},
+        "working_space": {"const": "encoded sRGB"},
+        "working_white_point": {"const": "D65"},
+        "adjustment_space": {"const": "linear sRGB"},
+        "relative_wb_multipliers": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"type": "number", "exclusiveMinimum": 0}},
+        "baseline_curve_applied": {"const": false},
+        "output_orientation": {"const": 1},
+        "alpha_composited": {"type": "boolean"}
+      }
+    },
     "libraries": {"type": "object"},
     "export": {"type": "object", "properties": {"format": {"enum": ["jpeg", "tiff"]}, "quality": {"type": "integer", "minimum": 80, "maximum": 100}, "color_space": {"const": "sRGB"}, "long_edge": {"enum": [null, 2048, 3840]}}},
     "output": {"type": "object"}

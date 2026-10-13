@@ -20,13 +20,14 @@ from PySide6.QtWidgets import (
 )
 
 from .models import default_settings, validate_export_options
+from .formats import RAW_EXTENSIONS, IMAGE_FILE_FILTER, is_supported_image
 from .profiles import list_profiles
 from .session import Session
 from .worker import Processor
 
 
 STYLE_NAMES = {
-    "baseline": "기본 현상", "documentary": "다큐멘터리 스타일",
+    "baseline": "기본 이미지", "documentary": "다큐멘터리 스타일",
     "negative": "네거티브 스타일", "cinema": "시네마 스타일",
     "vivid": "비비드 스타일", "monochrome": "흑백 스타일",
 }
@@ -362,7 +363,7 @@ class ExportDialog(QDialog):
         title = label(f"{count}장의 사진 내보내기")
         title.setStyleSheet("font-size: 19px; font-weight: 600; padding: 8px 0;")
         layout.addWidget(title)
-        note = label("등록 시점의 보정값으로 저장합니다. 원본 ARW는 그대로 보존됩니다.", "Muted")
+        note = label("등록 시점의 보정값으로 저장합니다. 원본 사진은 그대로 보존됩니다.", "Muted")
         note.setWordWrap(True)
         layout.addWidget(note)
         form = QFormLayout()
@@ -492,7 +493,7 @@ class FilmLabWindow(QMainWindow):
         mark.setStyleSheet("color: #d5b085; border: 1px solid #5a4c3b; border-radius: 3px; padding: 3px 7px; margin-left: 8px;")
         row.addWidget(mark)
         row.addSpacing(15)
-        row.addWidget(label("RAW에서 시작하는 나만의 필름 톤", "Muted"))
+        row.addWidget(label("사진에 더하는 나만의 필름 느낌", "Muted"))
         row.addStretch()
         local = label("●  로컬 처리", "Muted")
         local.setStyleSheet("color: #a5b4a6;")
@@ -525,7 +526,7 @@ class FilmLabWindow(QMainWindow):
         self.photos.currentItemChanged.connect(self.select_photo)
         self.photos.itemSelectionChanged.connect(self.update_counts)
         col.addWidget(self.photos, 1)
-        self.library_empty = label("아직 사진이 없습니다\n\nARW 파일을 추가하면\n이곳에서 모아 볼 수 있어요.", "Muted")
+        self.library_empty = label("아직 사진이 없습니다\n\n사진 파일을 추가하면\n이곳에서 모아 볼 수 있어요.", "Muted")
         self.library_empty.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.library_empty.setStyleSheet("color: #7e898e;")
         col.addWidget(self.library_empty)
@@ -575,16 +576,16 @@ class FilmLabWindow(QMainWindow):
         title.setStyleSheet("font-size: 24px; font-weight: 500; color: #e5e7e5;")
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         empty_col.addWidget(title)
-        subtitle = label("Sony α6400의 ARW 사진을 이곳에 놓아 주세요.\n기본 현상부터 다섯 가지 필름 스타일을 한 화면에서.", "Muted")
+        subtitle = label("ARW 또는 JPEG·PNG·TIFF·WebP·BMP 사진을 놓아 주세요.\n다섯 가지 스타일로 나만의 필름 느낌을 만들어 보세요.", "Muted")
         subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
         subtitle.setStyleSheet("color: #8d999f; font-size: 13px;")
         empty_col.addWidget(subtitle)
         empty_col.addSpacing(8)
-        choose = button("＋ ARW 사진 선택", self.pick_photos, primary=True)
+        choose = button("＋ 사진 선택", self.pick_photos, primary=True)
         choose.setFixedSize(171, 42)
         empty_col.addWidget(choose, 0, Qt.AlignmentFlag.AlignHCenter)
         empty_col.addSpacing(10)
-        hint = label(".ARW   ·   최대 100장   ·   원본 보존", "Muted")
+        hint = label("RAW + 일반 사진   ·   최대 100장   ·   원본 보존", "Muted")
         hint.setStyleSheet("color: #68767e; font-size: 11px;")
         hint.setAlignment(Qt.AlignmentFlag.AlignCenter)
         empty_col.addWidget(hint)
@@ -594,7 +595,7 @@ class FilmLabWindow(QMainWindow):
         workflow.setStyleSheet("color: #758186; font-size: 11px; padding-bottom: 44px;")
         empty_col.addWidget(workflow)
         center_col.addWidget(self.empty, 1)
-        self.image_info = label("비교 기준: 같은 노출·화이트밸런스를 적용한 RAW 기본 현상", "Muted")
+        self.image_info = label("사진을 선택하면 원본 형식에 맞는 보정 기준과 결과를 비교합니다", "Muted")
         self.image_info.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.image_info.setWordWrap(True)
         self.image_info.setStyleSheet("font-size: 10px; color: #879197; padding: 12px; background: #15191b;")
@@ -661,9 +662,9 @@ class FilmLabWindow(QMainWindow):
         self.add_adjustment(edit_col, "노출", "exposure_ev", -20, 30, 0, scale=10, suffix=" EV")
         self.add_adjustment(edit_col, "따뜻함", "warmth", -100, 100, 0)
         self.add_adjustment(edit_col, "틴트", "tint", -100, 100, 0)
-        wb_note = label("촬영 화이트밸런스 기준 상대 보정", "Muted")
-        wb_note.setStyleSheet("font-size: 10px; color: #7f8d92;")
-        edit_col.addWidget(wb_note)
+        self.wb_note = label("원본 사진의 색상을 기준으로 상대 보정", "Muted")
+        self.wb_note.setStyleSheet("font-size: 10px; color: #7f8d92;")
+        edit_col.addWidget(self.wb_note)
         edit_col.addSpacing(3)
         edit_col.addWidget(label("명암과 질감", "Section"))
         self.add_adjustment(edit_col, "대비", "contrast", -100, 100, 0)
@@ -767,13 +768,25 @@ class FilmLabWindow(QMainWindow):
     def selected_photos(self):
         return [photo for item in self.photos.selectedItems() if (photo := self.session.find(item.data(Qt.ItemDataRole.UserRole)))]
 
+    @staticmethod
+    def photo_kind(photo):
+        # Older RAW projects predate source_kind and remain readable.
+        return photo.source.get("source_kind") or ("raw" if Path(photo.path).suffix.lower() in RAW_EXTENSIONS else "raster")
+
+    def comparison_reference(self, photo):
+        if self.photo_kind(photo) == "raw":
+            return "같은 노출·WB의 RAW 기본 현상"
+        return "같은 밝기·색상 보정의 원본 이미지"
+
     def pick_photos(self):
-        paths, _ = QFileDialog.getOpenFileNames(self, "Sony α6400 ARW 사진 추가", "", "Sony RAW (*.ARW *.arw)")
+        paths, _ = QFileDialog.getOpenFileNames(self, "사진 추가", "", IMAGE_FILE_FILTER)
         if paths:
             self.add_paths(paths)
 
     def dragEnterEvent(self, event):
-        if event.mimeData().hasUrls() and any(url.toLocalFile().lower().endswith(".arw") for url in event.mimeData().urls()):
+        if event.mimeData().hasUrls() and any(url.isLocalFile() and is_supported_image(url.toLocalFile())
+                                            and not Path(url.toLocalFile()).is_dir()
+                                            for url in event.mimeData().urls()):
             event.acceptProposedAction()
 
     def dropEvent(self, event):
@@ -783,11 +796,12 @@ class FilmLabWindow(QMainWindow):
     def add_paths(self, paths):
         skipped = 0
         for path in paths:
-            if not str(path).lower().endswith(".arw"):
+            if not is_supported_image(path) or Path(path).is_dir():
                 skipped += 1
                 continue
             try:
-                photo = self.session.add({"id": uuid.uuid4().hex, "path": str(Path(path).resolve()), "supported": False})
+                photo = self.session.add({"id": uuid.uuid4().hex, "path": str(Path(path).resolve()), "supported": False,
+                                          "source_kind": "raw" if Path(path).suffix.lower() in RAW_EXTENSIONS else "raster"})
             except ValueError as exc:
                 QMessageBox.information(self, "사진 추가", str(exc))
                 break
@@ -804,7 +818,7 @@ class FilmLabWindow(QMainWindow):
         self.update_counts()
         self.mark_dirty()
         if skipped:
-            self.stage.setText(f"중복 경로 또는 ARW가 아닌 파일 {skipped}개를 건너뛰었습니다")
+            self.stage.setText(f"중복 경로 또는 지원하지 않는 파일 {skipped}개를 건너뛰었습니다")
 
     def add_list_item(self, photo):
         item = QListWidgetItem()
@@ -865,6 +879,16 @@ class FilmLabWindow(QMainWindow):
         self.loading_controls = False
         self._set_editor_enabled(bool(photo and photo.source.get("supported") and photo.status != "재연결 필요"))
         self.adjustments["saturation"].setEnabled(settings["style_id"] != "monochrome")
+        if photo:
+            raw = self.photo_kind(photo) == "raw"
+            self.style_buttons["baseline"].setText("기본 현상" if raw else "기본 이미지")
+            self.wb_note.setText("촬영 화이트밸런스 기준 상대 보정" if raw else "기존 이미지 색상 기준 상대 보정")
+            self.image_info.setText("비교 기준: " + self.comparison_reference(photo))
+            self.adjustments["exposure_ev"].setToolTip("RAW 현상 단계의 노출 조절" if raw else "이미 기록된 이미지의 밝기를 조절합니다")
+        else:
+            self.style_buttons["baseline"].setText("기본 이미지")
+            self.wb_note.setText("원본 사진의 색상을 기준으로 상대 보정")
+            self.image_info.setText("사진을 선택하면 원본 형식에 맞는 보정 기준과 결과를 비교합니다")
 
     def change_setting(self, key, value):
         if self.loading_controls or not self.current:
@@ -932,7 +956,7 @@ class FilmLabWindow(QMainWindow):
         self.requests[self.request_id] = {"photo_id": photo.id, "kind": "render"}
         self.worker.submit("render", {"source": photo.path, "recipe": {"source": deepcopy(photo.source), "settings": deepcopy(photo.settings)},
                                       "quality": self.zoom.currentData()}, token=self.request_id)
-        self.stage.setText("RAW 현상 · 미리보기 준비 중")
+        self.stage.setText(("RAW 현상" if self.photo_kind(photo) == "raw" else "이미지 보정") + " · 미리보기 준비 중")
 
     def poll(self):
         if not self.worker:
@@ -971,7 +995,8 @@ class FilmLabWindow(QMainWindow):
                 photo.status = "대기" if source.get("supported") else "실패"
                 photo.error = "\n".join(source.get("warnings", []))
                 if not source.get("supported"):
-                    photo.error = "Sony ILCE-6400에서 촬영한 ARW만 지원합니다. " + photo.error
+                    reason = "RAW는 Sony ILCE-6400의 ARW를 지원합니다." if self.photo_kind(photo) == "raw" else "이 이미지의 형식이나 내용을 처리할 수 없습니다."
+                    photo.error = reason + (" " + photo.error if photo.error else "")
             self.refresh_photo(photo)
             if self.current_id == photo.id:
                 self.load_controls()
@@ -991,12 +1016,12 @@ class FilmLabWindow(QMainWindow):
                 for style, path in result.get("thumbnails", {}).items():
                     if style in self.style_buttons:
                         self.style_buttons[style].setIcon(QIcon(path))
-                        self.style_buttons[style].setToolTip(STYLE_NAMES.get(style, style) + " · 현재 사진의 초기 스타일 미리보기")
+                        self.style_buttons[style].setToolTip(self.style_buttons[style].text() + " · 현재 사진의 초기 스타일 미리보기")
                 photo.status = "준비"
                 self.stage.setText(photo.error or f"미리보기 완료 · {result.get('elapsed_seconds', 0):.1f}초")
                 width, height = photo.source.get("width", ""), photo.source.get("height", "")
                 detail = "원본 해상도 100%" if self.zoom.currentData() == "full" else "화면 맞춤 · 긴 변 최대 2048 px"
-                self.image_info.setText(f"{width} × {height}  ·  {detail}  |  비교 기준: 같은 노출·WB의 RAW 기본 현상")
+                self.image_info.setText(f"{width} × {height}  ·  {detail}  |  비교 기준: {self.comparison_reference(photo)}")
             self.refresh_photo(photo)
         if event_type in ("done", "error"):
             self.requests.pop(token, None)
@@ -1026,7 +1051,7 @@ class FilmLabWindow(QMainWindow):
         photo = self.current
         if not photo or not self.worker:
             return
-        path, _ = QFileDialog.getOpenFileName(self, "같은 원본 ARW 다시 연결", "", "Sony RAW (*.ARW *.arw)")
+        path, _ = QFileDialog.getOpenFileName(self, "같은 원본 사진 다시 연결", "", IMAGE_FILE_FILTER)
         if path:
             token = self.worker.submit("inspect", {"path": path, "expected": photo.source if photo.source.get("sha256") else None})
             self.requests[token] = {"photo_id": photo.id, "reconnect": True}
@@ -1109,7 +1134,7 @@ class FilmLabWindow(QMainWindow):
                 if photo:
                     photo.status = "처리"
                     self.refresh_photo(photo)
-            self.stage.setText(f"RAW 현상 및 저장 · 0/{len(job['items'])}장 완료")
+            self.stage.setText(f"사진 처리 및 저장 · 0/{len(job['items'])}장 완료")
             self.save_session()
         elif event["event"] == "progress":
             result = event["result"]
@@ -1255,7 +1280,7 @@ class FilmLabWindow(QMainWindow):
         dialog.exec()
 
     def about(self):
-        QMessageBox.information(self, "FILM LAB · α6400", "FILM LAB 1.0.0\nSony ILCE-6400 ARW를 위한 로컬 사진 현상 프로그램\n\n사진에 필름 느낌을 더하는 자체 제작 스타일을 제공합니다.\n현재 프리셋은 비교 촬영으로 보정되기 전의 ‘초기 스타일’입니다. 실제 필름의 색감과 동일한 결과를 보장하지 않습니다.\n\n비교 화면의 기본 현상은 같은 RAW의 기준 렌더이며 카메라 내장 JPEG가 아닙니다. 하이라이트·그림자는 명암 조절입니다.\n\n16비트 TIFF는 현상된 이미지입니다. RAW와 같은 편집 여유를 갖지 않습니다.")
+        QMessageBox.information(self, "FILM LAB · α6400", "FILM LAB 1.0.0\nARW와 일반 사진에 필름 느낌을 더하는 로컬 편집 프로그램\n\n지원 입력: Sony ILCE-6400 ARW, JPEG, PNG, TIFF, WebP, BMP\n자체 제작 스타일을 제공하며, 현재 프리셋은 비교 촬영으로 보정되기 전의 ‘초기 스타일’입니다. 실제 필름의 색감과 동일한 결과를 보장하지 않습니다.\n\nRAW의 비교 기준은 같은 노출·화이트밸런스를 적용한 기본 현상이며 카메라 내장 JPEG가 아닙니다. 일반 사진은 같은 밝기·색상 보정을 적용한 이미지를 기준으로 비교합니다. 하이라이트·그림자는 명암 조절입니다.\n\n일반 사진과 출력 TIFF는 이미 현상된 이미지로, RAW와 같은 편집 여유를 갖지 않습니다.")
 
     def closeEvent(self, event):
         self.autosave.stop()
@@ -1288,7 +1313,7 @@ def self_test(source=None, output=None) -> int:
     """Exercise the real desktop worker, including in a frozen Windows build.
 
     The explicit data directory keeps smoke tests separate from user sessions.
-    A supplied RAW must produce a real preview before this reports success.
+    A supplied photo must produce a real preview before this reports success.
     """
     import multiprocessing
     import time
@@ -1336,7 +1361,7 @@ def self_test(source=None, output=None) -> int:
             return
         photo = window.current
         if photo and photo.preview and window.preview.item.width:
-            finish(0, "real RAW preview rendered")
+            finish(0, "real photo preview rendered")
         elif photo and photo.status == "실패":
             finish(1, photo.error)
 

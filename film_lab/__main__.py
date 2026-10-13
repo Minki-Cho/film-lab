@@ -1,4 +1,4 @@
-"""Both the desktop launcher and a fully headless RAW command line interface."""
+"""Desktop launcher and headless photo command line interface."""
 from __future__ import annotations
 
 import argparse
@@ -8,14 +8,36 @@ import sys
 from pathlib import Path
 
 from .models import ENGINE_VERSION, default_settings, validate_recipe, validate_settings
+from .formats import is_supported_image
+
+
+def collect_sources(values):
+    """Expand folders once, filter supported files, and deduplicate Windows paths."""
+    paths = {}
+    for value in values:
+        path = Path(value)
+        if path.is_dir():
+            candidates = sorted((entry for entry in path.iterdir()
+                                 if entry.is_file() and is_supported_image(entry)),
+                                key=lambda entry: entry.name.casefold())
+        else:
+            if not is_supported_image(path):
+                raise ValueError(f"지원하지 않는 사진 형식입니다: {path.name}")
+            candidates = [path]
+        for candidate in candidates:
+            resolved = str(candidate.resolve())
+            paths.setdefault(resolved.casefold(), resolved)
+    if not paths or len(paths) > 100:
+        raise ValueError("한 번에 1~100장의 지원되는 사진을 지정하세요.")
+    return list(paths.values())
 
 
 def main(argv=None) -> int:
-    parser = argparse.ArgumentParser(prog="film-lab", description="Sony a6400 로컬 RAW 필름 스타일 변환")
+    parser = argparse.ArgumentParser(prog="film-lab", description="ARW와 일반 사진에 필름 느낌을 더하는 로컬 변환 프로그램")
     parser.add_argument("--version", action="version", version=ENGINE_VERSION)
     sub = parser.add_subparsers(dest="command")
     sub.add_parser("gui", help="편집 화면 실행")
-    inspect_cmd = sub.add_parser("inspect", help="ARW 유효성 및 촬영 정보 확인")
+    inspect_cmd = sub.add_parser("inspect", help="사진 유효성, 형식 및 촬영 정보 확인")
     inspect_cmd.add_argument("source")
     sub.add_parser("profiles", help="사용 가능한 초기 스타일 목록")
     export_cmd = sub.add_parser("export", help="GUI 없이 한 장 또는 여러 장 변환")
@@ -28,7 +50,7 @@ def main(argv=None) -> int:
     export_cmd.add_argument("--long-edge", type=int, choices=(2048, 3840))
     export_cmd.add_argument("--exposure", type=float, default=None)
     export_cmd.add_argument("--strength", type=float, default=None, help="0~1")
-    preview_cmd = sub.add_parser("render", help="기본 현상 및 편집 미리보기 PNG 생성")
+    preview_cmd = sub.add_parser("render", help="보정 기준 및 편집 미리보기 PNG 생성")
     preview_cmd.add_argument("source")
     preview_cmd.add_argument("--style", default="documentary")
     preview_cmd.add_argument("--cache-dir")
@@ -66,13 +88,7 @@ def main(argv=None) -> int:
                 if option is not None:
                     settings[key] = option
             settings = validate_settings(settings)
-            paths = []
-            for value in args.sources:
-                path = Path(value)
-                paths.extend(sorted(path.glob("*.[aA][rR][wW]")) if path.is_dir() else [path])
-            paths = list(dict.fromkeys(str(p.resolve()) for p in paths))
-            if not paths or len(paths) > 100:
-                raise ValueError("한 번에 1~100장의 ARW를 지정하세요.")
+            paths = collect_sources(args.sources)
             result = export([{"source": path, "recipe": {"settings": settings}} for path in paths],
                             {"format": args.format, "quality": args.quality,
                              "long_edge": args.long_edge, "output_dir": args.output})

@@ -5,6 +5,7 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 import pytest
 from PySide6.QtWidgets import QApplication
 from film_lab.gui import FilmLabWindow
+from film_lab.formats import IMAGE_FILE_FILTER
 
 
 @pytest.fixture
@@ -111,3 +112,109 @@ def test_self_test_requires_isolated_data_directory(monkeypatch):
     from film_lab.gui import self_test
     monkeypatch.delenv("FILM_LAB_DATA", raising=False)
     assert self_test() == 2
+
+
+class RecordingWorker:
+    def __init__(self):
+        from types import SimpleNamespace
+        self.tasks = []
+        self.process = SimpleNamespace(is_alive=lambda: False)
+
+    def submit(self, kind, payload, token=None):
+        token = token or f"task-{len(self.tasks)}"
+        self.tasks.append({"kind": kind, "payload": payload, "token": token})
+        return token
+
+    def poll(self):
+        return []
+
+
+def test_mixed_image_selection_filters_duplicates_and_unrelated_files(window, tmp_path):
+    from pathlib import Path
+    window.worker = RecordingWorker()
+    names = ["sony.ArW", "portrait.JPG", "portrait.Jpeg", "image.pNg", "scan.TIF", "scan.Tiff", "web.WebP", "bitmap.bMp"]
+    paths = [str(tmp_path / name) for name in names]
+    unsupported = tmp_path / "not-an-image.txt"
+    fake_directory = tmp_path / "folder.png"
+    fake_directory.mkdir()
+    window.add_paths([*paths, paths[1], str(unsupported), str(fake_directory)])
+    assert [Path(photo.path).name for photo in window.session.photos] == names
+    assert window.session.photos[0].source["source_kind"] == "raw"
+    assert all(photo.source["source_kind"] == "raster" for photo in window.session.photos[1:])
+    assert len([task for task in window.worker.tasks if task["kind"] == "inspect"]) == 8
+    assert "3개" in window.stage.text()
+    # Once inspected, mixed source kinds remain selectable and exportable together.
+    for task in list(window.worker.tasks):
+        source = {"path": task["payload"]["path"], "supported": True,
+                  "source_kind": "raw" if task["payload"]["path"].lower().endswith(".arw") else "raster"}
+        window.handle_event({"kind": "inspect", "token": task["token"], "event": "done", "result": source})
+    window.photos.selectAll()
+    assert len(window.selected_photos()) == 8
+    assert window.selected_export.isEnabled()
+    assert window.all_export.isEnabled()
+
+
+def test_mixed_drag_drop_accepts_local_supported_images(window, tmp_path):
+    from PySide6.QtCore import QMimeData, QPoint, QPointF, Qt, QUrl
+    from PySide6.QtGui import QDragEnterEvent, QDropEvent
+    window.worker = RecordingWorker()
+    mime = QMimeData()
+    mime.setUrls([QUrl.fromLocalFile(str(tmp_path / "photo.JpG")),
+                  QUrl.fromLocalFile(str(tmp_path / "raw.ArW")),
+                  QUrl.fromLocalFile(str(tmp_path / "notes.txt")),
+                  QUrl("https://example.com/remote.png")])
+    enter = QDragEnterEvent(QPoint(10, 10), Qt.DropAction.CopyAction, mime, Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier)
+    window.dragEnterEvent(enter)
+    assert enter.isAccepted()
+    drop = QDropEvent(QPointF(10, 10), Qt.DropAction.CopyAction, mime, Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier)
+    window.dropEvent(drop)
+    assert drop.isAccepted()
+    assert len(window.session.photos) == 2
+    assert {window.photo_kind(photo) for photo in window.session.photos} == {"raw", "raster"}
+
+
+@pytest.mark.parametrize("suffix,kind,wb_text,reference", [
+    ("ARW", "raw", "촬영 화이트밸런스", "RAW 기본 현상"),
+    ("JPEG", "raster", "기존 이미지 색상", "원본 이미지"),
+    ("TIFF", "raster", "기존 이미지 색상", "원본 이미지"),
+])
+def test_source_specific_correction_and_comparison_notes(window, tmp_path, suffix, kind, wb_text, reference):
+    photo = window.session.add({"id": suffix, "path": str(tmp_path / ("photo." + suffix)),
+                                "supported": True, "source_kind": kind, "camera_model": "ILCE-6400"})
+    item = window.add_list_item(photo)
+    window.photos.setCurrentItem(item)
+    assert wb_text in window.wb_note.text()
+    assert reference in window.image_info.text()
+    assert window.style_buttons["baseline"].text() == ("기본 현상" if kind == "raw" else "기본 이미지")
+    window.worker = RecordingWorker()
+    window.request_render()
+    assert ("RAW 현상" if kind == "raw" else "이미지 보정") in window.stage.text()
+    if kind == "raster":
+        assert "RAW" not in window.adjustments["exposure_ev"].toolTip()
+
+
+def test_picker_and_reconnect_use_all_supported_formats(window, tmp_path, monkeypatch):
+    from film_lab.gui import QFileDialog
+    from pathlib import Path
+    window.worker = RecordingWorker()
+    calls = []
+    first = str(tmp_path / "photo.png")
+    second = str(tmp_path / "moved-photo.png")
+    def pick(*args):
+        calls.append(args[-1])
+        return [first], ""
+    def reconnect(*args):
+        calls.append(args[-1])
+        return second, ""
+    monkeypatch.setattr(QFileDialog, "getOpenFileNames", pick)
+    monkeypatch.setattr(QFileDialog, "getOpenFileName", reconnect)
+    window.pick_photos()
+    photo = window.current
+    photo.source.update(sha256="original-hash", size_bytes=321)
+    window.reconnect()
+    assert calls == [IMAGE_FILE_FILTER, IMAGE_FILE_FILTER]
+    task = window.worker.tasks[-1]
+    assert task["kind"] == "inspect"
+    assert task["payload"]["path"] == second
+    assert task["payload"]["expected"]["sha256"] == "original-hash"
+    assert Path(photo.path).name == "photo.png"  # Reconnect waits for identity verification.

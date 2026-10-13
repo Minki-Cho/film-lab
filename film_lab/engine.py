@@ -1,6 +1,6 @@
-"""Headless Sony a6400 RAW pipeline shared by the desktop app and CLI.
+"""Headless RAW and developed-photo pipeline shared by the desktop app and CLI.
 
-RAW files are opened for reading only. Work arrays and previews live in the
+Source files are opened for reading only. Work arrays and previews live in the
 bounded cache; exports are verified before an atomic, non-overwriting commit.
 """
 from __future__ import annotations
@@ -27,6 +27,7 @@ from PIL import Image, ImageCms, TiffImagePlugin
 
 from .cache import DiskCache, cache_key
 from .models import ENGINE_VERSION, validate_settings, validate_export_options, sha256_file, atomic_json
+from .formats import RAW_EXTENSIONS, RASTER_EXTENSIONS, SUPPORTED_EXTENSIONS
 
 CHUNK_ROWS = 128
 SUPPORTED_MODEL = "ILCE-6400"
@@ -55,14 +56,19 @@ def _rawpy():
         raise RuntimeError("RAW 엔진이 설치되지 않았습니다. requirements.txt의 rawpy를 설치하세요.") from exc
 
 
-def _versions():
+def _versions(include_raw=True):
     versions = {}
-    for name in ("rawpy", "numpy", "Pillow", "tifffile", "ExifRead"):
+    names = ("rawpy", "numpy", "Pillow", "tifffile", "ExifRead") if include_raw else ("numpy", "Pillow", "tifffile")
+    for name in names:
         try:
             versions[name] = importlib.metadata.version(name)
         except importlib.metadata.PackageNotFoundError:
             versions[name] = "unavailable"
-    versions["LibRaw"] = ".".join(str(v) for v in _rawpy().libraw_version)
+    if include_raw:
+        versions["LibRaw"] = ".".join(str(v) for v in _rawpy().libraw_version)
+    else:
+        from PIL import features
+        versions["LittleCMS"] = features.version("littlecms2")
     return versions
 
 
@@ -108,10 +114,10 @@ def _metadata(path):
 
 
 def inspect(source: str) -> dict:
-    """Validate content with LibRaw and return a source fingerprint and safe EXIF."""
+    """Validate decoded content and return an immutable fingerprint and safe EXIF."""
     path = Path(source).expanduser().resolve(strict=True)
-    if not path.is_file() or path.suffix.lower() != ".arw":
-        raise ValueError("Sony ILCE-6400의 .ARW 파일만 지원합니다.")
+    if not path.is_file() or path.suffix.lower() not in SUPPORTED_EXTENSIONS:
+        raise ValueError("Sony ILCE-6400 ARW 또는 JPEG, PNG, TIFF, WebP, BMP 이미지를 선택하세요.")
     before = path.stat()
     fingerprint = sha256_file(path)
     identity = (str(path), before.st_size, before.st_mtime_ns, fingerprint)
@@ -121,6 +127,21 @@ def inspect(source: str) -> dict:
     if identity in _INSPECTION_CACHE:
         _INSPECTION_CACHE.move_to_end(identity)
         return copy.deepcopy(_INSPECTION_CACHE[identity])
+    if path.suffix.lower() in RASTER_EXTENSIONS:
+        from .raster import load_raster
+        try:
+            pixels, description = load_raster(path)
+            del pixels
+        except Exception as exc:
+            raise ValueError(f"이미지 내용을 읽을 수 없습니다: {path.name}: {exc}") from exc
+        after = path.stat()
+        result = {"id": str(path), "path": str(path), "size_bytes": before.st_size,
+                  "mtime_ns": before.st_mtime_ns, "sha256": fingerprint, **description}
+        _assert_source_unchanged(result)
+        _INSPECTION_CACHE[identity] = copy.deepcopy(result)
+        while len(_INSPECTION_CACHE) > 128:
+            _INSPECTION_CACHE.popitem(last=False)
+        return result
     metadata = _metadata(path)
     supported = metadata["camera_model"].strip().upper() == SUPPORTED_MODEL
     warnings = []
@@ -145,6 +166,7 @@ def inspect(source: str) -> dict:
         raise ValueError("검사 중 원본 파일이 변경되었습니다. 다시 연결하세요.")
     result = {"id": str(path), "path": str(path), "size_bytes": after.st_size,
             "mtime_ns": after.st_mtime_ns, "sha256": fingerprint,
+            "source_kind": "raw", "image_format": "ARW",
             "camera_model": metadata["camera_model"], "width": width, "height": height,
             "rotation": {0: 0, 3: 180, 5: 270, 6: 90}.get(flip, 0),
             "libraw_flip": flip, "metadata": metadata, "supported": supported, "warnings": warnings}
@@ -227,13 +249,73 @@ def _close_map(array):
 
 
 def _baseline(source, settings, cache, cancel):
+    if source.get("source_kind", "raw") == "raster":
+        return _raster_baseline(source, settings, cache, cancel)
+    return _raw_baseline(source, settings, cache, cancel)
+
+
+def _raster_baseline(source, settings, cache, cancel):
+    from .color import BASELINE_VERSION
+    from .raster import IMPORTER_VERSION, load_raster, adjust_developed
+    versions = _versions(include_raw=False)
+    identity = {"id": "raster_srgb_import", "version": IMPORTER_VERSION,
+                "sha256": hashlib.sha256(b"raster-srgb-v1:ICC-or-sRGB;orientation;white-alpha;linear-exposure-WB;no-RAW-curve").hexdigest(),
+                "baseline_version": BASELINE_VERSION}
+    key = cache_key({"source_kind": "raster", "source": source["sha256"], "engine": ENGINE_VERSION,
+                     "input_format": source.get("image_format"),
+                     "raster_importer": identity, "libraries": versions,
+                     "adjustments": {k: settings[k] for k in ("exposure_ev", "wb_mode", "warmth", "tint")}})
+    array_path, info_path = cache.get(key), cache.get(key, ".json")
+    data = None
+    if array_path and info_path:
+        try:
+            info = json.loads(info_path.read_text(encoding="utf-8"))
+            if not isinstance(info, dict) or not {"image_processing", "libraries", "baseline_version", "baseline_profile", "warnings"}.issubset(info):
+                raise ValueError("Invalid raster cache metadata")
+            data = np.load(array_path, mmap_mode="r", allow_pickle=False)
+            if data.dtype != np.float32 or data.ndim != 3 or data.shape[2] != 3:
+                raise ValueError("Invalid raster cache")
+            return data, info, key
+        except (ValueError, OSError, EOFError, json.JSONDecodeError):
+            _close_map(data)
+    _check_cancel(cancel)
+    pixels, description = load_raster(source["path"])
+    _check_cancel(cancel)
+    temporary = cache.temporary()
+    result = None
+    try:
+        result = np.lib.format.open_memmap(temporary, mode="w+", dtype=np.float32, shape=pixels.shape)
+        for top in range(0, pixels.shape[0], CHUNK_ROWS):
+            _check_cancel(cancel)
+            result[top:top + CHUNK_ROWS], multipliers = adjust_developed(pixels[top:top + CHUNK_ROWS], settings)
+        _close_map(result)
+        result = None
+        processing = {"importer_version": IMPORTER_VERSION, "input_format": description["image_format"],
+                      "input_bit_depth": description["bit_depth"], "input_icc_sha256": description["input_icc_sha256"],
+                      "color_policy": description["color_policy"], "working_space": "encoded sRGB",
+                      "working_white_point": "D65", "adjustment_space": "linear sRGB",
+                      "exposure_ev": settings["exposure_ev"], "relative_wb_multipliers": multipliers,
+                      "wb_reference": "already_rendered_pixels", "baseline_curve_applied": False,
+                      "output_orientation": 1, "alpha_composited": description["alpha_composited"],
+                      "alpha_composite_space": "encoded sRGB"}
+        info = {"image_processing": processing, "libraries": versions, "baseline_version": BASELINE_VERSION,
+                "baseline_profile": identity, "warnings": description["warnings"]}
+        array_path = cache.commit(temporary, key)
+        atomic_json(cache.path(key, ".json"), info)
+        return np.load(array_path, mmap_mode="r", allow_pickle=False), info, key
+    finally:
+        _close_map(result)
+        temporary.unlink(missing_ok=True)
+
+
+def _raw_baseline(source, settings, cache, cancel):
     from .color import (baseline_render, BASELINE_VERSION, normalize_libraw_prophoto,
                         LIBRAW_PROPHOTO_NORMALIZATION_VERSION, LIBRAW_PROPHOTO_NORMALIZATION_SHA256)
     from .profiles import get_profile
     baseline_profile = get_profile("baseline")
     baseline_identity = {k: baseline_profile[k] for k in ("id", "version", "sha256", "baseline_version")}
     versions = _versions()
-    key = cache_key({"source": source["sha256"], "engine": ENGINE_VERSION,
+    key = cache_key({"source_kind": "raw", "source": source["sha256"], "engine": ENGINE_VERSION,
                      "baseline": baseline_identity, "libraries": versions,
                      "decoder_normalization": {"version": LIBRAW_PROPHOTO_NORMALIZATION_VERSION,
                                                "sha256": LIBRAW_PROPHOTO_NORMALIZATION_SHA256},
@@ -375,9 +457,11 @@ def _final_rgb(rgb, settings, source_hash, long_edge, cancel):
 def _resolved_recipe(source, settings, profile, info, export_options=None):
     recipe = {"schema_version": 1, "engine_version": ENGINE_VERSION,
               "source": copy.deepcopy(source), "profile": profile,
-              "settings": settings, "raw_processing": info["raw_processing"],
+              "settings": settings,
               "libraries": info["libraries"], "baseline_version": info["baseline_version"],
               "baseline_profile": info["baseline_profile"]}
+    processing_key = "image_processing" if source.get("source_kind", "raw") == "raster" else "raw_processing"
+    recipe[processing_key] = info[processing_key]
     if export_options is not None:
         recipe["export"] = export_options
     return recipe
@@ -403,7 +487,7 @@ def render(source_id: str, recipe: dict, quality="preview", request_id="", cache
     source = _check_source(source_id, recipe)
     cache = DiskCache(cache_dir)
     if cache.directory == Path(source["path"]).parent:
-        raise ValueError("원본 보호를 위해 캐시는 RAW 원본 폴더와 다른 폴더에 저장해야 합니다.")
+        raise ValueError("원본 보호를 위해 캐시는 원본 사진 폴더와 다른 폴더에 저장해야 합니다.")
     baseline = processed = None
     work_path = None
     protected = []
@@ -631,14 +715,14 @@ def export_item(source, recipe, export_options, cancel=None) -> dict:
         source_info = _check_source(source, recipe)
         directory = Path(options["output_dir"]).expanduser().resolve()
         if directory == Path(source_info["path"]).parent:
-            raise ValueError("원본 보호를 위해 RAW 원본 폴더와 다른 저장 폴더를 선택하세요.")
+            raise ValueError("원본 보호를 위해 원본 사진 폴더와 다른 저장 폴더를 선택하세요.")
         directory.mkdir(parents=True, exist_ok=True)
         estimated = source_info["width"] * source_info["height"] * 6 + 64 * 1024**2
         if shutil.disk_usage(directory).free < estimated:
             raise OSError("저장 공간이 부족합니다. 출력 크기 이상의 여유 공간을 확보하세요.")
         cache = DiskCache()
         if cache.directory == Path(source_info["path"]).parent:
-            raise ValueError("원본 보호를 위해 캐시는 RAW 원본 폴더와 다른 폴더에 저장해야 합니다.")
+            raise ValueError("원본 보호를 위해 캐시는 원본 사진 폴더와 다른 폴더에 저장해야 합니다.")
         baseline, processed, info, key, work_path = _processed(source_info, settings, cache, cancel)
         # Export needs no comparison array after processing.
         _close_map(baseline)

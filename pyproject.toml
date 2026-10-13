@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "a6400-film-lab"
 version = "1.0.0"
-description = "Offline Sony a6400 RAW film style editor"
+description = "Offline film-look editor for Sony a6400 RAW and common image formats"
 requires-python = ">=3.12,<3.13"
 dynamic = ["dependencies"]
 
